@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+from argparse import ArgumentParser
+
+
+parser = ArgumentParser()
+parser.add_argument("--dir", help="output directory")
+args = parser.parse_args()
+
+folder = args.dir if args.dir else 'k8s_files'
+if not os.path.exists(folder):
+    os.makedirs(folder)
+
+try:
+    manifests = sys.stdin.read().split("---")
+except Exception as ex:
+    print("Error:", ex)
+
+for count, manifest in enumerate(manifests):
+    filename = "k8s-file-%d.yaml" % count
+    with open(os.path.join(folder, filename), 'w') as f:
+        for line in manifest.strip().split("\n"):
+            f.write(line + "\n")
